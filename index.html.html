@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>USDT TRC20 Viewer</title>
+  <script src="https://cdn.jsdelivr.net/npm/tronweb/dist/TronWeb.js"></script>
+</head>
+<body>
+  <h2>USDT TRC20 Balance Viewer</h2>
+
+  <button onclick="connectWallet()">اتصال به TronLink</button>
+
+  <p id="wallet-address">آدرس کیف پول: </p>
+  <p id="balance">موجودی: </p>
+  <p id="price">قیمت هر توکن: 1 دلار</p>
+  <p id="total-value">ارزش کل: </p>
+
+  <script>
+    const contractAddress = "TBoEs3QG2GiRc4BUtxqMYnnBoGDgik8uQL";
+    const decimals = 6;
+    const pricePerToken = 1; // نمایشی
+
+    let tronWeb;
+
+    async function connectWallet() {
+      if (window.tronWeb && window.tronWeb.ready) {
+        tronWeb = window.tronWeb;
+        const address = tronWeb.defaultAddress.base58;
+        document.getElementById("wallet-address").innerText = "آدرس کیف پول: " + address;
+        getBalance(address);
+      } else {
+        alert("لطفاً TronLink را نصب و فعال کنید.");
+      }
+    }
+
+    async function getBalance(address) {
+      const contract = await tronWeb.contract().at(contractAddress);
+      const balanceRaw = await contract.balanceOf(address).call();
+      const balance = balanceRaw / Math.pow(10, decimals);
+      document.getElementById("balance").innerText = "موجودی: " + balance + " USDT";
+      document.getElementById("total-value").innerText = "ارزش کل: " + (balance * pricePerToken) + " دلار";
+    }
+  </script>
+</body>
+</html>
